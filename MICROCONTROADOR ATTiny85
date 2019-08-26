@@ -1,0 +1,132 @@
+// PROJETO CONTADOR DE PECAS DA LINHA FECHADORA
+// REVISAO: 00
+// DATA: 24.08.2019
+// AUTOR: RICARDO CERIGHIN
+// CODINOME: ORION
+// MICROCONTROLADOR: ATTiny85
+
+#include <TinyLiquidCrystal.h>                                        // INCLUSÃO DE BIBLIOTECA
+#include <LiquidCrystal_I2C.h>                                        // INCLUSÃO DE BIBLIOTECA
+
+LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);        // ENDEREÇO DO I2C E DEMAIS INFORMAÇÕES
+
+int sensorA = 1;                                                      // SENSOR FIM DE LINHA
+int sensorB = 4;                                                      // SENSOR PRENSA
+int menos = 3;                                                        // BOTAO PARA DECREMENTAR UMA UNIDADE
+int auxA;                                                             // ARMAZENA VALOR SENSOR FIM DE LINHA
+int auxB;                                                             // ARMAZENA VALOR SENSOR PRENSA
+int botaoMenos;                                                       // ARMAZENA VALOR BOTAO DECREMENTA
+int contador;                                                         // ARMAZENA VALOR CONTADOR
+
+void setup()
+{
+  // DEFINICAO DE I/O
+  pinMode(sensorA, INPUT);
+  pinMode(sensorB, INPUT);
+  pinMode(menos, INPUT);
+
+  // DEFINE VALORES INICIAIS DAS VARIAVEIS AUXILIARES
+  auxA = 0;
+  auxB = 0;
+  botaoMenos = 0;
+  contador = 0;
+
+  // CONFIGURA TIPO LCD
+  lcd.begin (20, 4);                                                  //SETA A QUANTIDADE DE COLUNAS(20) E O NÚMERO DE LINHAS(4) DO DISPLAY
+  lcd.setBacklight(HIGH);                                             //LIGA O BACKLIGHT (LUZ DE FUNDO)
+
+  // DADOS INICIAIS DO LCD
+  lcd.setCursor(0, 0);                                                //SETA A POSIÇÃO DO CURSOR
+  lcd.print(" SOLUFIL FILTRACAO");                                    //IMPRIME O TEXTO NO DISPLAY LCD
+  lcd.setCursor(0, 1);                                                
+  lcd.print("     INDUSTRIAL");                                      
+  lcd.setCursor(0, 2);                                               
+  lcd.print("FECHADORA NUMERO: 01");                                 
+  lcd.setCursor(0, 3);                                               
+  lcd.print("CONTADOR:");                                             
+  lcd.setCursor(19, 3);
+  lcd.print(contador);
+}
+
+void loop()
+{
+  // VERIFICA STATUS DO BOTAO DECREMENTA
+  botaoMenos = digitalRead(menos);
+  
+  if (!botaoMenos)
+  {
+    if (contador > 0)
+    {
+      // DECREMENTA VALOR NO CONTADOR
+      contador --;
+      lcd.setCursor(10, 3);
+      lcd.print("          ");
+      // EXIBE VALOR ATUALIZADO DO CONTADOR
+      lcd.setCursor(0, 3);
+      lcd.print("CONTADOR:");
+    }
+
+    // CONFERE E IMPEDE EXECUCAO DE NUMEROS NEGATIVOS
+    else if (contador = 0)
+    {
+      contador = 0;
+      lcd.setCursor(10, 3);
+      lcd.print("          ");
+      // EXIBE VALOR ATUALIZADO DO CONTADOR
+      lcd.setCursor(0, 3);
+      lcd.print("CONTADOR:");
+    }
+    if (contador < 10)
+    {
+      lcd.setCursor(19, 3);
+    }
+    else if (contador > 9 && contador < 100)
+    {
+      lcd.setCursor(18, 3);
+    }
+    if (contador > 99 && contador < 1000)
+    {
+      lcd.setCursor(17, 3);
+    }
+    if (contador > 999)
+    {
+      lcd.setCursor(16, 3);
+    }
+    lcd.print(contador);
+    delay(1000);
+  }
+
+  // VERIFICA STATUS DO SENSOR FIM DE LINHA
+  auxA = digitalRead(sensorA);
+  // VERIFICA STATUS DO SENSOR PRENSA
+  auxB = digitalRead(sensorB);
+
+  if (!auxA && !auxB)
+  {
+    // INCREMENTA VALOR NO CONTADOR
+    contador ++;
+    lcd.setCursor(10, 3);
+    lcd.print("          ");
+    // EXIBE VALOR ATUALIZADO DO CONTADOR
+    lcd.setCursor(0, 3);
+    lcd.print("CONTADOR:");
+    if (contador < 10)
+    {
+      lcd.setCursor(19, 3);
+    }
+    else if (contador > 9 && contador < 100)
+    {
+      lcd.setCursor(18, 3);
+    }
+    if (contador > 99 && contador < 1000)
+    {
+      lcd.setCursor(17, 3);
+    }
+    if (contador > 999)
+    {
+      lcd.setCursor(16, 3);
+    }
+    lcd.print(contador);
+    delay(5000);
+  }
+}
